@@ -2,14 +2,32 @@ package Clients.Entity.Client;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Entity
+@JsonPropertyOrder({"id",
+                    "lastname",
+                    "firstname",
+                    "surname",
+                    "sex",
+                    "birthday",
+                    "phoneNumber",
+                    "email",
+                    "isBlock",
+                    "additionalNumber",
+                    "reasonOfBlock",})
 public class Client {
+
+    @Id()
     private UUID id;
-    private String firstname;
     private String lastname;
+    private String firstname;
     private String surname;
     private LocalDate birthday;
     private String sex;
@@ -23,11 +41,11 @@ public class Client {
 
     }
 
-    public Client(UUID id, String firstname, String lastname, String surname, LocalDate birthday, String sex,
+    public Client(UUID id, String lastname, String firstname, String surname, LocalDate birthday, String sex,
                   String phoneNumber, String email, String additionalNumber, boolean isBlock, String reasonOfBlock) {
         this.id               = id;
-        this.firstname        = firstname;
         this.lastname         = lastname;
+        this.firstname        = firstname;
         this.surname          = surname;
         this.birthday         = birthday;
         this.sex              = sex;
@@ -85,7 +103,7 @@ public class Client {
     }
 
     @JsonProperty("isBlock")
-    public boolean isBlock() {
+    public boolean getBlockStatus() {
         return isBlock;
     }
 
@@ -130,7 +148,7 @@ public class Client {
         this.additionalNumber = additionalNumber;
     }
 
-    public void setBlock(boolean block) {
+    public void setBlockStatus(boolean block) {
         isBlock = block;
     }
 
