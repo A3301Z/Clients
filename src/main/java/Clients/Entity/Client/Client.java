@@ -1,13 +1,13 @@
 package Clients.Entity.Client;
 
+import Clients.Entity.Goal.Goal;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,7 +21,7 @@ import java.util.UUID;
                     "email",
                     "isBlock",
                     "additionalNumber",
-                    "reasonOfBlock",})
+                    "reasonOfBlock"})
 public class Client {
 
     @Id()
@@ -36,6 +36,11 @@ public class Client {
     private String additionalNumber;
     private boolean isBlock;
     private String reasonOfBlock;
+    @Lob
+    private byte[] content;
+
+    @OneToMany(mappedBy = "client")
+    private List<Goal> goals;
 
     public Client() {
 
@@ -53,7 +58,7 @@ public class Client {
         this.email            = email;
         this.additionalNumber = additionalNumber;
         this.isBlock          = isBlock;
-        this.reasonOfBlock    = reasonOfBlock;
+        this.reasonOfBlock = reasonOfBlock;
     }
 
     @JsonProperty("id")
@@ -112,6 +117,12 @@ public class Client {
         return reasonOfBlock;
     }
 
+    @Lob
+    @JsonProperty("content")
+    public byte[] getContent() {
+        return content;
+    }
+
     public void setId(UUID id) {
         this.id = id;
     }
@@ -148,11 +159,14 @@ public class Client {
         this.additionalNumber = additionalNumber;
     }
 
-    public void setBlockStatus(boolean block) {
-        isBlock = block;
+    public void setBlockStatus(boolean isBlock) {
+        this.isBlock = isBlock;
     }
 
     public void setReasonOfBlock(String reasonOfBlock) {
         this.reasonOfBlock = reasonOfBlock;
+    }
+    public void setContent(byte[] content) {
+        this.content = content;
     }
 }

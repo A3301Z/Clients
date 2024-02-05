@@ -1,21 +1,29 @@
 package Clients.Service;
 
 import Clients.Entity.Client.Client;
+import Clients.Entity.Goal.Goal;
 import Clients.Models.Client.ClientDTO;
+import Clients.Models.Goal.GoalDTO;
 import Clients.Repository.ClientRepository;
+import Clients.Repository.GoalRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
-    private final ClientRepository repository;
+    private final ClientRepository clientRepository;
+    private final GoalRepository goalRepository;
 
-    public ClientService(@Autowired ClientRepository repository) {
-        this.repository = repository;
+
+    public ClientService(@Autowired ClientRepository repository, GoalRepository goalRepository) {
+        this.clientRepository = repository;
+        this.goalRepository   = goalRepository;
     }
 
     public void add(ClientDTO clientDTO) {
@@ -32,35 +40,35 @@ public class ClientService {
         client.setEmail(clientDTO.email);
         client.setReasonOfBlock(clientDTO.reasonOfBlock);
 
-        repository.save(client);
+        clientRepository.save(client);
     }
 
     public List<Client> getClients() {
-        return repository.findAll();
+        return clientRepository.findAll();
     }
 
     public Optional<Client> getById(UUID id) {
-        return repository.findById(id);
+        return clientRepository.findById(id);
     }
 
     public void updateClient(ClientDTO clientDTO) {
 
-        Optional<Client> updatedClient = getById(clientDTO.id);
+        Optional<Client> optionalClient = getById(clientDTO.id);
 
-        if (updatedClient.isPresent()) {
-            Client client1 = updatedClient.get();
-            client1.setFirstname(clientDTO.firstname);
-            client1.setLastname(clientDTO.lastname);
-            client1.setSurname(clientDTO.surname);
-            client1.setBirthday(clientDTO.birthday);
-            client1.setSex(clientDTO.sex);
-            client1.setPhoneNumber(clientDTO.phoneNumber);
-            client1.setEmail(clientDTO.email);
-            client1.setAdditionalNumber(clientDTO.additionalNumber);
-            client1.setBlockStatus(clientDTO.is_block);
-            client1.setReasonOfBlock(clientDTO.reasonOfBlock);
+        if (optionalClient.isPresent()) {
+            Client client = optionalClient.get();
+            client.setFirstname(clientDTO.firstname);
+            client.setLastname(clientDTO.lastname);
+            client.setSurname(clientDTO.surname);
+            client.setBirthday(clientDTO.birthday);
+            client.setSex(clientDTO.sex);
+            client.setPhoneNumber(clientDTO.phoneNumber);
+            client.setEmail(clientDTO.email);
+            client.setAdditionalNumber(clientDTO.additionalNumber);
+            client.setBlockStatus(clientDTO.is_block);
+            client.setReasonOfBlock(clientDTO.reasonOfBlock);
 
-            repository.save(client1);
+            clientRepository.save(client);
 
         } else {
             throw new RuntimeException(String.format("Тренер с id '%s' не существует.", clientDTO.id));
@@ -68,13 +76,58 @@ public class ClientService {
     }
 
     public void blockingClient(UUID id) {
-        Optional<Client> optionalClient = repository.findById(id);
+        Optional<Client> optionalClient = clientRepository.findById(id);
         if (optionalClient.isPresent()) {
             Client client = optionalClient.get();
             client.setBlockStatus(true);
-            repository.save(client);
+            clientRepository.save(client);
         } else {
             throw new RuntimeException(String.format("Клиент с id '%s' не найден.", id));
         }
+    }
+
+    public void addPhoto(UUID id, byte[] content) {
+        Optional<Client> optionalClient = clientRepository.findById(id);
+
+        if (optionalClient.isEmpty()) {
+            throw new RuntimeException(String.format("Не удалось добавить фото. Клиент с id '%s' не найден.", id));
+        } else {
+            Client client = optionalClient.get();
+            client.setContent(content);
+            clientRepository.save(client);
+        }
+    }
+
+    public byte[] getPhoto(UUID id) {
+        Optional<Client> optionalClient = clientRepository.findById(id);
+
+        if (optionalClient.isEmpty()) {
+            throw new RuntimeException(String.format("Не удалось загрузить фото. Клиент с id '%s' не найден.", id));
+        } else
+            return optionalClient.get().getContent();
+    }
+
+    @Transactional
+    public void addGoal(UUID clientId, GoalDTO goalDTO) {
+        Optional<Client> client = clientRepository.findById(clientId);
+
+        if (client.isEmpty()) {
+            throw new RuntimeException(String.format("Не удалось добавить цель. Клиент с id '%s' не найден.",clientId));
+        } else {
+            Goal goal = new Goal();
+            goal.setId(UUID.randomUUID());
+            goal.setClient(client.get());
+            goal.setGoalName(goalDTO.goalName);
+            goal.setGoalDescription(goalDTO.goalDescription);
+            goal.setDesiredCompletionDate(goalDTO.desiredCompletionDate);
+            goal.setCompleted(goalDTO.isCompleted);
+            goal.setCompletionDate(goalDTO.completionDate);
+
+            goalRepository.save(goal);
+        }
+    }
+
+    public List<Goal> getGoals(UUID clientId) {
+        return null;
     }
 }
