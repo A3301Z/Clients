@@ -20,7 +20,6 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final GoalRepository goalRepository;
 
-
     public ClientService(@Autowired ClientRepository repository, GoalRepository goalRepository) {
         this.clientRepository = repository;
         this.goalRepository   = goalRepository;
@@ -112,7 +111,8 @@ public class ClientService {
         Optional<Client> client = clientRepository.findById(clientId);
 
         if (client.isEmpty()) {
-            throw new RuntimeException(String.format("Не удалось добавить цель. Клиент с id '%s' не найден.",clientId));
+            throw new RuntimeException(String.format("Не удалось добавить цель. Клиент с id '%s' не найден.",
+                                                     clientId));
         } else {
             Goal goal = new Goal();
             goal.setId(UUID.randomUUID());
@@ -128,6 +128,23 @@ public class ClientService {
     }
 
     public List<Goal> getGoals(UUID clientId) {
-        return null;
+        Optional<Client> client = clientRepository.findById(clientId);
+
+        if (client.isEmpty()) {
+            throw new RuntimeException(String.format("Клиент с id '%s' не найден.", clientId));
+        } else {
+            List<Goal> goalList = goalRepository.findAllByClient_Id(clientId);
+
+            return goalList.stream().map(goal -> {
+                Goal newGoal = new Goal();
+                newGoal.setId(goal.getId());
+                newGoal.setGoalName(goal.getGoalName());
+                newGoal.setGoalDescription(goal.getGoalDescription());
+                newGoal.setDesiredCompletionDate(goal.getDesiredCompletionDate());
+                newGoal.setCompleted(goal.isCompleted());
+                newGoal.setCompletionDate(goal.getCompletionDate());
+                return newGoal;
+            }).collect(Collectors.toList());
+        }
     }
 }

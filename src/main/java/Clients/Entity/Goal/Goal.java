@@ -1,6 +1,7 @@
 package Clients.Entity.Goal;
 
 import Clients.Entity.Client.Client;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
@@ -32,6 +33,7 @@ public class Goal {
     private LocalDate completionDate;
     @ManyToOne
     @JoinColumn(name = "client_id")
+    @JsonIgnore
     private Client client;
 
     public Client getClient() {

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
 import java.util.UUID;
 @JsonPropertyOrder({"id",
-                    "client_id",
                     "goalName",
                     "goalDescription",
                     "desiredCompletionDate",
