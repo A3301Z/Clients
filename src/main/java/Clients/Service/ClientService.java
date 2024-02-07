@@ -1,30 +1,25 @@
 package Clients.Service;
 
 import Clients.Entity.Client.Client;
-import Clients.Entity.Goal.Goal;
 import Clients.Models.Client.ClientDTO;
-import Clients.Models.Goal.GoalDTO;
 import Clients.Repository.ClientRepository;
-import Clients.Repository.GoalRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
     private final ClientRepository clientRepository;
-    private final GoalRepository goalRepository;
 
-    public ClientService(@Autowired ClientRepository repository, GoalRepository goalRepository) {
+    public ClientService(@Autowired ClientRepository repository) {
         this.clientRepository = repository;
-        this.goalRepository   = goalRepository;
     }
 
+    @Transactional
     public void add(ClientDTO clientDTO) {
         Client client = new Client();
         client.setId(UUID.randomUUID());
@@ -46,13 +41,14 @@ public class ClientService {
         return clientRepository.findAll();
     }
 
-    public Optional<Client> getById(UUID id) {
+    public Optional<Client> findById(UUID id) {
         return clientRepository.findById(id);
     }
 
+    @Transactional
     public void updateClient(ClientDTO clientDTO) {
 
-        Optional<Client> optionalClient = getById(clientDTO.id);
+        Optional<Client> optionalClient = findById(clientDTO.id);
 
         if (optionalClient.isPresent()) {
             Client client = optionalClient.get();
@@ -104,47 +100,5 @@ public class ClientService {
             throw new RuntimeException(String.format("Не удалось загрузить фото. Клиент с id '%s' не найден.", id));
         } else
             return optionalClient.get().getContent();
-    }
-
-    @Transactional
-    public void addGoal(UUID clientId, GoalDTO goalDTO) {
-        Optional<Client> client = clientRepository.findById(clientId);
-
-        if (client.isEmpty()) {
-            throw new RuntimeException(String.format("Не удалось добавить цель. Клиент с id '%s' не найден.",
-                                                     clientId));
-        } else {
-            Goal goal = new Goal();
-            goal.setId(UUID.randomUUID());
-            goal.setClient(client.get());
-            goal.setGoalName(goalDTO.goalName);
-            goal.setGoalDescription(goalDTO.goalDescription);
-            goal.setDesiredCompletionDate(goalDTO.desiredCompletionDate);
-            goal.setCompleted(goalDTO.isCompleted);
-            goal.setCompletionDate(goalDTO.completionDate);
-
-            goalRepository.save(goal);
-        }
-    }
-
-    public List<Goal> getGoals(UUID clientId) {
-        Optional<Client> client = clientRepository.findById(clientId);
-
-        if (client.isEmpty()) {
-            throw new RuntimeException(String.format("Клиент с id '%s' не найден.", clientId));
-        } else {
-            List<Goal> goalList = goalRepository.findAllByClient_Id(clientId);
-
-            return goalList.stream().map(goal -> {
-                Goal newGoal = new Goal();
-                newGoal.setId(goal.getId());
-                newGoal.setGoalName(goal.getGoalName());
-                newGoal.setGoalDescription(goal.getGoalDescription());
-                newGoal.setDesiredCompletionDate(goal.getDesiredCompletionDate());
-                newGoal.setCompleted(goal.isCompleted());
-                newGoal.setCompletionDate(goal.getCompletionDate());
-                return newGoal;
-            }).collect(Collectors.toList());
-        }
     }
 }

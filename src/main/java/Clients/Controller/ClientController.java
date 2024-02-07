@@ -1,10 +1,8 @@
 package Clients.Controller;
 
 import Clients.Entity.Client.Client;
-import Clients.Entity.Goal.Goal;
 import Clients.Models.Client.ClientDTO;
 import Clients.Models.Client.ClientMinimalDTO;
-import Clients.Models.Goal.GoalDTO;
 import Clients.Service.ClientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +22,17 @@ import java.util.UUID;
 public class ClientController {
     private final ClientService clientService;
 
-    public ClientController(@Autowired ClientService service) {
-        this.clientService = service;
+    public ClientController(@Autowired ClientService clientService) {
+        this.clientService = clientService;
     }
 
-    @Tag(name = "Добавить клиента.")
+    @Tag(name = "КЛИЕНТ: Добавить в список.")
     @PostMapping(value = "/client")
     public void add(@RequestBody ClientDTO clientDTO) {
         clientService.add(clientDTO);
     }
 
-    @Tag(name = "Список клиентов.")
+    @Tag(name = "КЛИЕНТ: Получить список.")
     @GetMapping("/clients")
     public List<ClientMinimalDTO> getClients() {
         List<ClientMinimalDTO> clients = new ArrayList<>();
@@ -54,47 +52,37 @@ public class ClientController {
         return clients;
     }
 
-    @Tag(name = "Полная информация о клиенте.")
+    @Tag(name = "КЛИЕНТ: Полная информация.")
     @GetMapping("/client/{id}")
     public ResponseEntity<Client> getFullInfo(@PathVariable UUID id) {
-        Optional<Client> client = clientService.getById(id);
+        Optional<Client> client = clientService.findById(id);
         return client.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                      .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @Tag(name = "Изменить параметры килента.")
+    @Tag(name = "КЛИЕНТ: Изменить параметры.")
     @PutMapping(value = "/client")
     public void updateClient(@RequestBody() ClientDTO clientDTO) {
         clientService.updateClient(clientDTO);
     }
 
-    @Tag(name = "Заблокировать клиента.")
+    @Tag(name = "КЛИЕНТ: Заблокировать.")
     @DeleteMapping("/client/{id}")
     public void blockingClient(@PathVariable UUID id) {
         clientService.blockingClient(id);
     }
 
 
-    @Tag(name = "Добавить фото клиента.")
+    @Tag(name = "ФОТО: Добавить фото клиента.")
     @PostMapping(value = "/client/{id}/photo", consumes = "multipart/form-data")
     public void addPhoto(@PathVariable UUID id, @RequestParam() MultipartFile file) throws IOException {
         clientService.addPhoto(id, file.getBytes());
     }
 
-    @Tag(name = "Получить фото клиента.")
+    @Tag(name = "ФОТО: Получить фото клиента.")
     @GetMapping(value = "/client/{id}/photo", produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody byte[] addPhoto(@PathVariable UUID id) {
+    public @ResponseBody byte[] getPhoto(@PathVariable UUID id) {
         return this.clientService.getPhoto(id);
     }
-    @Tag(name = "Добавить цель в список.")
-    @PostMapping("/client/{id}/newGoal")
-    public void addGoals(@PathVariable UUID id, @RequestBody GoalDTO goalDTO) {
-        clientService.addGoal(id, goalDTO);
-    }
 
-    @Tag(name = "Получить список целей клиента.")
-    @GetMapping("/client/{clientId}/goals")
-    public List<Goal> getGoals(@PathVariable UUID clientId) {
-        return clientService.getGoals(clientId);
-    }
 }

@@ -2,6 +2,7 @@ package Clients.Entity.Client;
 
 import Clients.Entity.Goal.Goal;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
@@ -19,8 +20,8 @@ import java.util.UUID;
                     "birthday",
                     "phoneNumber",
                     "email",
-                    "isBlock",
                     "additionalNumber",
+                    "isBlock",
                     "reasonOfBlock"})
 public class Client {
 
@@ -118,6 +119,7 @@ public class Client {
     }
 
     @Lob
+    @JsonIgnore
     @JsonProperty("content")
     public byte[] getContent() {
         return content;

@@ -1,6 +1,7 @@
 package Clients.Entity.Goal;
 
 import Clients.Entity.Client.Client;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -26,10 +27,12 @@ public class Goal {
     @JsonProperty("goalDescription")
     private String goalDescription;
     @JsonProperty("desiredCompletionDate")
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate desiredCompletionDate;
     @JsonProperty("isCompleted")
     private boolean isCompleted;
     @JsonProperty("completionDate")
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate completionDate;
     @ManyToOne
     @JoinColumn(name = "client_id")
@@ -74,6 +77,7 @@ public class Goal {
     }
 
     @JsonProperty("desiredCompletionDate")
+    @JsonFormat(pattern = "dd.MM.yyyy")
     public LocalDate getDesiredCompletionDate() {
         return desiredCompletionDate;
     }
@@ -84,6 +88,7 @@ public class Goal {
     }
 
     @JsonProperty("completionDate")
+    @JsonFormat(pattern = "dd.MM.yyyy")
     public LocalDate getCompletionDate() {
         return completionDate;
     }

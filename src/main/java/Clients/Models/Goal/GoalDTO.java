@@ -6,24 +6,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.time.LocalDate;
 import java.util.UUID;
-@JsonPropertyOrder({"id",
-                    "goalName",
-                    "goalDescription",
-                    "desiredCompletionDate",
-                    "isCompleted",
-                    "completionDate"})
+
+@JsonPropertyOrder({"id", "goalName"})
 public class GoalDTO {
     @JsonProperty("id")
     public UUID id;
     @JsonProperty("goalName")
     public String goalName;
-    @JsonProperty("goalDescription")
-    public String goalDescription;
-    @JsonProperty("desiredCompletionDate")
-    public LocalDate desiredCompletionDate;
-    @JsonProperty("isCompleted")
-    public boolean isCompleted;
-    @JsonProperty("completionDate")
-    @JsonFormat(pattern = "dd.MM.yyyy")
-    public LocalDate completionDate;
 }
