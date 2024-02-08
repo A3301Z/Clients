@@ -46,27 +46,27 @@ public class ClientService {
     }
 
     @Transactional
-    public void updateClient(ClientDTO clientDTO) {
+    public void updateClient(Client client) {
 
-        Optional<Client> optionalClient = findById(clientDTO.id);
+        Optional<Client> optionalClient = findById(client.getId());
 
         if (optionalClient.isPresent()) {
-            Client client = optionalClient.get();
-            client.setFirstname(clientDTO.firstname);
-            client.setLastname(clientDTO.lastname);
-            client.setSurname(clientDTO.surname);
-            client.setBirthday(clientDTO.birthday);
-            client.setSex(clientDTO.sex);
-            client.setPhoneNumber(clientDTO.phoneNumber);
-            client.setEmail(clientDTO.email);
-            client.setAdditionalNumber(clientDTO.additionalNumber);
-            client.setBlockStatus(clientDTO.is_block);
-            client.setReasonOfBlock(clientDTO.reasonOfBlock);
+            Client updatedClient = optionalClient.get();
+            updatedClient.setFirstname(client.getFirstname());
+            updatedClient.setLastname(client.getLastname());
+            updatedClient.setSurname(client.getSurname());
+            updatedClient.setBirthday(client.getBirthday());
+            updatedClient.setSex(client.getSex());
+            updatedClient.setPhoneNumber(client.getPhoneNumber());
+            updatedClient.setEmail(client.getEmail());
+            updatedClient.setAdditionalNumber(client.getAdditionalNumber());
+            updatedClient.setBlockStatus(client.getBlockStatus());
+            updatedClient.setReasonOfBlock(client.getReasonOfBlock());
 
             clientRepository.save(client);
 
         } else {
-            throw new RuntimeException(String.format("Тренер с id '%s' не существует.", clientDTO.id));
+            throw new RuntimeException(String.format("Тренер с id '%s' не существует.", client.getId()));
         }
     }
 

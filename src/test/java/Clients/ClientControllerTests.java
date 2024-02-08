@@ -51,9 +51,10 @@ public class ClientControllerTests {
 
     @Test
     void testUpdateClient() {
-        ClientDTO clientDTO = new ClientDTO();
-        clientController.updateClient(clientDTO);
-        verify(clientService, times(1)).updateClient(clientDTO);
+        Client client = new Client();
+        ClientDTO dto = new ClientDTO();
+        clientController.updateClient(dto);
+        verify(clientService, times(1)).updateClient(client);
     }
 
     @Test

@@ -63,7 +63,21 @@ public class ClientController {
     @Tag(name = "КЛИЕНТ: Изменить параметры.")
     @PutMapping(value = "/client")
     public void updateClient(@RequestBody() ClientDTO clientDTO) {
-        clientService.updateClient(clientDTO);
+        Client client = new Client();
+
+        client.setId(clientDTO.id);
+        client.setLastname(clientDTO.lastname);
+        client.setFirstname(clientDTO.firstname);
+        client.setSurname(clientDTO.surname);
+        client.setSex(clientDTO.sex);
+        client.setBirthday(clientDTO.birthday);
+        client.setPhoneNumber(clientDTO.phoneNumber);
+        client.setAdditionalNumber(clientDTO.additionalNumber);
+        client.setEmail(clientDTO.email);
+        client.setBlockStatus(clientDTO.is_block);
+        client.setReasonOfBlock(clientDTO.reasonOfBlock);
+
+        clientService.updateClient(client);
     }
 
     @Tag(name = "КЛИЕНТ: Заблокировать.")
