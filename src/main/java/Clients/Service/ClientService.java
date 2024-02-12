@@ -20,20 +20,7 @@ public class ClientService {
     }
 
     @Transactional
-    public void add(ClientDTO clientDTO) {
-        Client client = new Client();
-        client.setId(UUID.randomUUID());
-        client.setFirstname(clientDTO.firstname);
-        client.setLastname(clientDTO.lastname);
-        client.setSurname(clientDTO.surname);
-        client.setSex(clientDTO.sex);
-        client.setBirthday(clientDTO.birthday);
-        client.setPhoneNumber(clientDTO.phoneNumber);
-        client.setBlockStatus(clientDTO.is_block);
-        client.setAdditionalNumber(clientDTO.additionalNumber);
-        client.setEmail(clientDTO.email);
-        client.setReasonOfBlock(clientDTO.reasonOfBlock);
-
+    public void add(Client client) {
         clientRepository.save(client);
     }
 
@@ -70,14 +57,25 @@ public class ClientService {
         }
     }
 
-    public void blockingClient(UUID id) {
+    public void blockingClient(UUID id, String reasonOfBlock) {
         Optional<Client> optionalClient = clientRepository.findById(id);
         if (optionalClient.isPresent()) {
             Client client = optionalClient.get();
+            client.setReasonOfBlock(reasonOfBlock);
             client.setBlockStatus(true);
             clientRepository.save(client);
         } else {
             throw new RuntimeException(String.format("Клиент с id '%s' не найден.", id));
+        }
+    }
+
+    public void deleteClient(UUID id) {
+        Optional<Client> optionalClient = findById(id);
+        if (optionalClient.isEmpty()) {
+            throw new RuntimeException(String.format("Клиент с ID '%s' не найден. Не удалось удалить.", id));
+        } else {
+            Client client = optionalClient.get();
+            clientRepository.delete(client);
         }
     }
 

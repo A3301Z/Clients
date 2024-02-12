@@ -30,33 +30,12 @@ public class GoalService {
     }
 
     @Transactional
-    public void addGoal(UUID clientId, GoalMinimalDTO goalMinimalDTO) {
-        Optional<Client> client = clientRepository.findById(clientId);
-
-        if (client.isEmpty()) {
-            throw new RuntimeException(String.format("Цель не добавлена. Клиент с id '%s' не найден.", clientId));
-        } else {
-            Goal goal = new Goal();
-            goal.setId(UUID.randomUUID());
-            goal.setClient(client.get());
-            goal.setGoalName(goalMinimalDTO.goalName);
-            goal.setGoalDescription(goalMinimalDTO.goalDescription);
-            goal.setDesiredCompletionDate(goalMinimalDTO.desiredCompletionDate);
-            goal.setCompleted(goalMinimalDTO.isCompleted);
-            goal.setCompletionDate(goalMinimalDTO.completionDate);
-
-            goalRepository.save(goal);
-        }
+    public void addGoal(Goal goal) {
+        goalRepository.save(goal);
     }
 
     @Transactional
-    public void updateGoal(UUID goalId, GoalMinimalDTO goalMinimalDTO) {
-        Goal goal = findGoalById(goalId);
-        goal.setGoalName(goalMinimalDTO.goalName);
-        goal.setGoalDescription(goalMinimalDTO.goalDescription);
-        goal.setDesiredCompletionDate(goalMinimalDTO.desiredCompletionDate);
-        goal.setCompleted(goalMinimalDTO.isCompleted);
-        goal.setCompletionDate(goalMinimalDTO.completionDate);
+    public void updateGoal(Goal goal) {
         goalRepository.save(goal);
     }
 

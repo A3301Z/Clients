@@ -3,7 +3,9 @@ package Clients.Controller;
 import Clients.Entity.Client.Client;
 import Clients.Models.Client.ClientDTO;
 import Clients.Models.Client.ClientMinimalDTO;
+import Clients.Models.Views.Public;
 import Clients.Service.ClientService;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,8 +30,22 @@ public class ClientController {
 
     @Tag(name = "КЛИЕНТ: Добавить в список.")
     @PostMapping(value = "/client")
-    public void add(@RequestBody ClientDTO clientDTO) {
-        clientService.add(clientDTO);
+    public void add(@RequestBody @JsonView(Public.class) ClientDTO clientDTO) {
+
+        Client client = new Client();
+        client.setId(UUID.randomUUID());
+        client.setFirstname(clientDTO.firstname);
+        client.setLastname(clientDTO.lastname);
+        client.setSurname(clientDTO.surname);
+        client.setSex(clientDTO.sex);
+        client.setBirthday(clientDTO.birthday);
+        client.setPhoneNumber(clientDTO.phoneNumber);
+        client.setBlockStatus(false);
+        client.setAdditionalNumber(clientDTO.additionalNumber);
+        client.setEmail(clientDTO.email);
+        client.setReasonOfBlock(null);
+
+        clientService.add(client);
     }
 
     @Tag(name = "КЛИЕНТ: Получить список.")
@@ -81,11 +97,16 @@ public class ClientController {
     }
 
     @Tag(name = "КЛИЕНТ: Заблокировать.")
-    @DeleteMapping("/client/{id}")
-    public void blockingClient(@PathVariable UUID id) {
-        clientService.blockingClient(id);
+    @DeleteMapping("/client/{id}/block")
+    public void blockingClient(@PathVariable UUID id, @RequestParam String reasonOfBlock) {
+        clientService.blockingClient(id, reasonOfBlock);
     }
 
+    @Tag(name = "КЛИЕНТ: Удалить.")
+    @DeleteMapping("/client/{id}/delete")
+    public void deleteClient(@PathVariable UUID id) {
+        clientService.deleteClient(id);
+    }
 
     @Tag(name = "ФОТО: Добавить фото клиента.")
     @PostMapping(value = "/client/{id}/photo", consumes = "multipart/form-data")

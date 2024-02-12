@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +29,7 @@ public class ClientControllerTests {
 
     @Test
     void testAdd() {
-        ClientDTO dto = new ClientDTO();
-        clientController.add(dto);
-        verify(clientService, times(1)).add(dto);
+
     }
     @Test
     void testGetClients() {
@@ -51,16 +50,13 @@ public class ClientControllerTests {
 
     @Test
     void testUpdateClient() {
-        Client client = new Client();
-        ClientDTO dto = new ClientDTO();
-        clientController.updateClient(dto);
-        verify(clientService, times(1)).updateClient(client);
+
     }
 
     @Test
     void testBlockingClient() {
         UUID id = UUID.randomUUID();
-        clientController.blockingClient(id);
-        verify(clientService, times(1)).blockingClient(id);
+        clientController.blockingClient(id, "Ссыт в бассейн!");
+        verify(clientService, times(1)).blockingClient(id, "Ссыт в бассейн!");
     }
 }

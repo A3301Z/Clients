@@ -40,7 +40,7 @@ public class Client {
     @Lob
     private byte[] content;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<Goal> goals;
 
     public Client() {
