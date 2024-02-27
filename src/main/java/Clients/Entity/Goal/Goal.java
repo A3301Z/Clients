@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ import java.util.UUID;
                     "desiredCompletionDate",
                     "isCompleted",
                     "completionDate"})
-public class Goal {
+public class Goal implements Serializable {
     @Id
     @JsonProperty("id")
     private UUID id;

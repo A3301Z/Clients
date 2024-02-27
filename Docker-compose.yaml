@@ -1,8 +1,8 @@
 version: '3'
 services:
-  clients_postgres:
+  postgres:
     image: 'postgres:latest'
-    container_name: 'clients_postgres'
+    container_name: 'postgres'
     environment:
       - 'POSTGRES_DB=clients'
       - 'POSTGRES_USER=postgres'
@@ -22,8 +22,21 @@ services:
       - 'DB_URL=jdbc:postgresql://postgres:5432/clients'
       - 'DB_USERNAME=postgres'
       - 'DB_PASSWORD=0000'
+      - 'SPRING_PROFILES_ACTIVE=default,redis'
+
     depends_on:
-      - clients_postgres
+      - postgres
+      - redis
+    networks:
+      - backend
+
+  redis:
+    image: 'redis:latest'
+    container_name: 'redis'
+    environment:
+      - 'REDIS_HOST=redis'
+    ports:
+      - "6379:6379"
     networks:
       - backend
 

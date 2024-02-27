@@ -4,9 +4,13 @@ import Clients.Entity.Client.Client;
 import Clients.Models.Client.ClientDTO;
 import Clients.Repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,22 +24,26 @@ public class ClientService {
     }
 
     @Transactional
+    @CachePut(value = "client", key = "#client.id")
     public void add(Client client) {
         clientRepository.save(client);
     }
 
+    @Cacheable(value = "clients", key = "'allClients'")
     public List<Client> getClients() {
         return clientRepository.findAll();
     }
 
+    @Cacheable(value = "client", key = "#id")
     public Optional<Client> findById(UUID id) {
         return clientRepository.findById(id);
     }
 
     @Transactional
+    @CachePut(value = "client", key = "#client.id")
     public void updateClient(Client client) {
 
-        Optional<Client> optionalClient = findById(client.getId());
+        Optional<Client> optionalClient = clientRepository.findById(client.getId());
 
         if (optionalClient.isPresent()) {
             Client updatedClient = optionalClient.get();
@@ -50,13 +58,14 @@ public class ClientService {
             updatedClient.setBlockStatus(client.getBlockStatus());
             updatedClient.setReasonOfBlock(client.getReasonOfBlock());
 
-            clientRepository.save(client);
+            clientRepository.save(updatedClient);
 
         } else {
             throw new RuntimeException(String.format("Тренер с id '%s' не существует.", client.getId()));
         }
     }
 
+    @CachePut(value = "client", key = "#id")
     public void blockingClient(UUID id, String reasonOfBlock) {
         Optional<Client> optionalClient = clientRepository.findById(id);
         if (optionalClient.isPresent()) {
@@ -69,8 +78,9 @@ public class ClientService {
         }
     }
 
+    @CacheEvict(value = "client", key = "#id")
     public void deleteClient(UUID id) {
-        Optional<Client> optionalClient = findById(id);
+        Optional<Client> optionalClient = clientRepository.findById(id);
         if (optionalClient.isEmpty()) {
             throw new RuntimeException(String.format("Клиент с ID '%s' не найден. Не удалось удалить.", id));
         } else {

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +24,7 @@ import java.util.UUID;
                     "additionalNumber",
                     "isBlock",
                     "reasonOfBlock"})
-public class Client {
+public class Client implements Serializable {
 
     @Id()
     private UUID id;
