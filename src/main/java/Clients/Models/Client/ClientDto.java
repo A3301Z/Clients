@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonView;
                     "phoneNumber",
                     "email",
                     "additionalNumber"})
-public class ClientDTO extends ClientMinimalDTO {
+public class ClientDto extends ClientMinimalDTO {
     @JsonView(Public.class)
     @JsonProperty("email")
     public String email;

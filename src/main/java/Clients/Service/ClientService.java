@@ -1,112 +1,88 @@
 package Clients.Service;
 
 import Clients.Entity.Client.Client;
-import Clients.Models.Client.ClientDTO;
+import Clients.Exception.NotFoundException;
+import Clients.Models.Client.ClientDto;
 import Clients.Repository.ClientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ClientService {
-    private final ClientRepository clientRepository;
 
-    public ClientService(@Autowired ClientRepository repository) {
-        this.clientRepository = repository;
-    }
+    private final ClientRepository clientRepository;
 
     @Transactional
     @CachePut(value = "client", key = "#client.id")
-    public void add(Client client) {
-        clientRepository.save(client);
+    public void add(ClientDto clientDto) {
+        log.debug("#add: clientDto={}", clientDto);
+        clientRepository.save(Client.toClient(clientDto));
     }
 
     @Cacheable(value = "clients", key = "'allClients'")
     public List<Client> getClients() {
+        log.debug("#getClients");
         return clientRepository.findAll();
     }
 
     @Cacheable(value = "client", key = "#id")
     public Optional<Client> findById(UUID id) {
+        log.debug("#findById");
         return clientRepository.findById(id);
     }
 
     @Transactional
     @CachePut(value = "client", key = "#client.id")
-    public void updateClient(Client client) {
-
-        Optional<Client> optionalClient = clientRepository.findById(client.getId());
-
-        if (optionalClient.isPresent()) {
-            Client updatedClient = optionalClient.get();
-            updatedClient.setFirstname(client.getFirstname());
-            updatedClient.setLastname(client.getLastname());
-            updatedClient.setSurname(client.getSurname());
-            updatedClient.setBirthday(client.getBirthday());
-            updatedClient.setSex(client.getSex());
-            updatedClient.setPhoneNumber(client.getPhoneNumber());
-            updatedClient.setEmail(client.getEmail());
-            updatedClient.setAdditionalNumber(client.getAdditionalNumber());
-            updatedClient.setBlockStatus(client.getBlockStatus());
-            updatedClient.setReasonOfBlock(client.getReasonOfBlock());
-
-            clientRepository.save(updatedClient);
-
-        } else {
-            throw new RuntimeException(String.format("Тренер с id '%s' не существует.", client.getId()));
-        }
+    public void updateClient(ClientDto clientDto) {
+        log.debug("#updateClient: clientDto={}", clientDto);
+        clientRepository.save(clientRepository.findById(clientDto.id).orElseThrow(
+                () -> new NotFoundException("Client", "id", clientDto.id.toString()))
+        );
     }
 
     @CachePut(value = "client", key = "#id")
     public void blockingClient(UUID id, String reasonOfBlock) {
-        Optional<Client> optionalClient = clientRepository.findById(id);
-        if (optionalClient.isPresent()) {
-            Client client = optionalClient.get();
+        log.debug("#blockingClient: id={}, reasonOfBlock={}", id, reasonOfBlock);
+        clientRepository.findById(id).ifPresentOrElse(client -> {
+            client.setBlock(true);
             client.setReasonOfBlock(reasonOfBlock);
-            client.setBlockStatus(true);
             clientRepository.save(client);
-        } else {
-            throw new RuntimeException(String.format("Клиент с id '%s' не найден.", id));
-        }
+        }, () -> {
+            throw new NotFoundException("Client", "id", id.toString());
+        });
     }
 
     @CacheEvict(value = "client", key = "#id")
     public void deleteClient(UUID id) {
-        Optional<Client> optionalClient = clientRepository.findById(id);
-        if (optionalClient.isEmpty()) {
-            throw new RuntimeException(String.format("Клиент с ID '%s' не найден. Не удалось удалить.", id));
-        } else {
-            Client client = optionalClient.get();
-            clientRepository.delete(client);
-        }
+        clientRepository.findById(id).ifPresentOrElse(clientRepository::delete, () -> {
+            throw new NotFoundException("Client", "id", id.toString());
+        });
     }
 
     public void addPhoto(UUID id, byte[] content) {
-        Optional<Client> optionalClient = clientRepository.findById(id);
-
-        if (optionalClient.isEmpty()) {
-            throw new RuntimeException(String.format("Не удалось добавить фото. Клиент с id '%s' не найден.", id));
-        } else {
-            Client client = optionalClient.get();
+        clientRepository.findById(id).ifPresentOrElse(client -> {
             client.setContent(content);
             clientRepository.save(client);
-        }
+        }, () -> {
+            throw new NotFoundException(String.format("Фото не добавлено, клиент с ID = %s не найден", id));
+        });
     }
 
     public byte[] getPhoto(UUID id) {
-        Optional<Client> optionalClient = clientRepository.findById(id);
-
-        if (optionalClient.isEmpty()) {
-            throw new RuntimeException(String.format("Не удалось загрузить фото. Клиент с id '%s' не найден.", id));
+        if (clientRepository.findById(id).isEmpty()) {
+            throw new NotFoundException("Client", "id", id.toString());
         } else
-            return optionalClient.get().getContent();
+            return clientRepository.findById(id).get().getContent();
     }
 }

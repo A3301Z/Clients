@@ -1,13 +1,14 @@
 package Clients.Controller;
 
 import Clients.Entity.Client.Client;
-import Clients.Models.Client.ClientDTO;
+import Clients.Models.Client.ClientDto;
 import Clients.Models.Client.ClientMinimalDTO;
 import Clients.Models.Views.Public;
 import Clients.Service.ClientService;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,32 +21,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @RestController
+@RequiredArgsConstructor
 public class ClientController {
-    private final ClientService clientService;
 
-    public ClientController(@Autowired ClientService clientService) {
-        this.clientService = clientService;
-    }
+    private final ClientService clientService;
 
     @Tag(name = "КЛИЕНТ: Добавить в список.")
     @PostMapping(value = "/client")
-    public void add(@RequestBody @JsonView(Public.class) ClientDTO clientDTO) {
-
-        Client client = new Client();
-        client.setId(UUID.randomUUID());
-        client.setFirstname(clientDTO.firstname);
-        client.setLastname(clientDTO.lastname);
-        client.setSurname(clientDTO.surname);
-        client.setSex(clientDTO.sex);
-        client.setBirthday(clientDTO.birthday);
-        client.setPhoneNumber(clientDTO.phoneNumber);
-        client.setBlockStatus(false);
-        client.setAdditionalNumber(clientDTO.additionalNumber);
-        client.setEmail(clientDTO.email);
-        client.setReasonOfBlock(null);
-
-        clientService.add(client);
+    public void add(@RequestBody @JsonView(Public.class) ClientDto clientDTO) {
+        clientService.add(clientDTO);
     }
 
     @Tag(name = "КЛИЕНТ: Получить список.")
@@ -54,14 +40,14 @@ public class ClientController {
         List<ClientMinimalDTO> clients = new ArrayList<>();
         for (Client client : clientService.getClients()) {
             ClientMinimalDTO dto = new ClientMinimalDTO();
-            dto.id          = client.getId();
-            dto.lastname    = client.getLastname();
-            dto.firstname   = client.getFirstname();
-            dto.surname     = client.getSurname();
-            dto.sex         = client.getSex();
-            dto.birthday    = client.getBirthday();
+            dto.id = client.getId();
+            dto.lastname = client.getLastname();
+            dto.firstname = client.getFirstname();
+            dto.surname = client.getSurname();
+            dto.sex = client.getSex();
+            dto.birthday = client.getBirthday();
             dto.phoneNumber = client.getPhoneNumber();
-            dto.is_block    = client.getBlockStatus();
+            dto.is_block = client.getBlockStatus();
 
             clients.add(dto);
         }
@@ -73,27 +59,13 @@ public class ClientController {
     public ResponseEntity<Client> getFullInfo(@PathVariable UUID id) {
         Optional<Client> client = clientService.findById(id);
         return client.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @Tag(name = "КЛИЕНТ: Изменить параметры.")
     @PutMapping(value = "/client")
-    public void updateClient(@RequestBody() ClientDTO clientDTO) {
-        Client client = new Client();
-
-        client.setId(clientDTO.id);
-        client.setLastname(clientDTO.lastname);
-        client.setFirstname(clientDTO.firstname);
-        client.setSurname(clientDTO.surname);
-        client.setSex(clientDTO.sex);
-        client.setBirthday(clientDTO.birthday);
-        client.setPhoneNumber(clientDTO.phoneNumber);
-        client.setAdditionalNumber(clientDTO.additionalNumber);
-        client.setEmail(clientDTO.email);
-        client.setBlockStatus(clientDTO.is_block);
-        client.setReasonOfBlock(clientDTO.reasonOfBlock);
-
-        clientService.updateClient(client);
+    public void updateClient(@RequestBody() ClientDto clientDTO) {
+        clientService.updateClient(clientDTO);
     }
 
     @Tag(name = "КЛИЕНТ: Заблокировать.")
