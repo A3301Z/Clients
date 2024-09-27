@@ -23,6 +23,9 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
 
+    /**
+     * Добавить клиента в БД
+     */
     @Transactional
     @CachePut(value = "client", key = "#client.id")
     public void add(ClientDto clientDto) {
@@ -30,18 +33,27 @@ public class ClientService {
         clientRepository.save(Client.toClient(clientDto));
     }
 
+    /**
+     * Получить список всех клиентов
+     */
     @Cacheable(value = "clients", key = "'allClients'")
     public List<Client> getClients() {
         log.debug("#getClients");
         return clientRepository.findAll();
     }
 
+    /**
+     * Получить клиента по идентификатору
+     */
     @Cacheable(value = "client", key = "#id")
     public Optional<Client> findById(UUID id) {
         log.debug("#findById");
         return clientRepository.findById(id);
     }
 
+    /**
+     * Обновить параметры клиента
+     */
     @Transactional
     @CachePut(value = "client", key = "#client.id")
     public void updateClient(ClientDto clientDto) {
@@ -51,6 +63,9 @@ public class ClientService {
         );
     }
 
+    /**
+     * Блокировать аккаунт клиента
+     */
     @CachePut(value = "client", key = "#id")
     public void blockingClient(UUID id, String reasonOfBlock) {
         log.debug("#blockingClient: id={}, reasonOfBlock={}", id, reasonOfBlock);
@@ -63,6 +78,9 @@ public class ClientService {
         });
     }
 
+    /**
+     * Удалить клиента из БД
+     */
     @CacheEvict(value = "client", key = "#id")
     public void deleteClient(UUID id) {
         clientRepository.findById(id).ifPresentOrElse(clientRepository::delete, () -> {
@@ -70,6 +88,9 @@ public class ClientService {
         });
     }
 
+    /**
+     * Добавить фото клиента
+     */
     public void addPhoto(UUID id, byte[] content) {
         clientRepository.findById(id).ifPresentOrElse(client -> {
             client.setContent(content);
@@ -79,6 +100,9 @@ public class ClientService {
         });
     }
 
+    /**
+     * Получить фото клиента
+     */
     public byte[] getPhoto(UUID id) {
         if (clientRepository.findById(id).isEmpty()) {
             throw new NotFoundException("Client", "id", id.toString());
