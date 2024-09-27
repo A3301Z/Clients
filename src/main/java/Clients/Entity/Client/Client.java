@@ -1,11 +1,15 @@
 package Clients.Entity.Client;
 
 import Clients.Entity.Goal.Goal;
+import Clients.Models.Client.ClientDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -14,18 +18,20 @@ import java.util.UUID;
 
 @Entity
 @JsonPropertyOrder({"id",
-                    "lastname",
-                    "firstname",
-                    "surname",
-                    "sex",
-                    "birthday",
-                    "phoneNumber",
-                    "email",
-                    "additionalNumber",
-                    "isBlock",
-                    "reasonOfBlock"})
+        "lastname",
+        "firstname",
+        "surname",
+        "sex",
+        "birthday",
+        "phoneNumber",
+        "email",
+        "additionalNumber",
+        "isBlock",
+        "reasonOfBlock"})
+@Data
+@Builder
+@RequiredArgsConstructor
 public class Client implements Serializable {
-
     @Id()
     private UUID id;
     private String lastname;
@@ -43,25 +49,6 @@ public class Client implements Serializable {
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<Goal> goals;
-
-    public Client() {
-
-    }
-
-    public Client(UUID id, String lastname, String firstname, String surname, LocalDate birthday, String sex,
-                  String phoneNumber, String email, String additionalNumber, boolean isBlock, String reasonOfBlock) {
-        this.id               = id;
-        this.lastname         = lastname;
-        this.firstname        = firstname;
-        this.surname          = surname;
-        this.birthday         = birthday;
-        this.sex              = sex;
-        this.phoneNumber      = phoneNumber;
-        this.email            = email;
-        this.additionalNumber = additionalNumber;
-        this.isBlock          = isBlock;
-        this.reasonOfBlock = reasonOfBlock;
-    }
 
     @JsonProperty("id")
     public UUID getId() {
@@ -126,50 +113,19 @@ public class Client implements Serializable {
         return content;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public void setAdditionalNumber(String additionalNumber) {
-        this.additionalNumber = additionalNumber;
-    }
-
-    public void setBlockStatus(boolean isBlock) {
-        this.isBlock = isBlock;
-    }
-
-    public void setReasonOfBlock(String reasonOfBlock) {
-        this.reasonOfBlock = reasonOfBlock;
-    }
-    public void setContent(byte[] content) {
-        this.content = content;
+    public static Client toClient(ClientDto clientDto) {
+        return Client.builder()
+                .id(UUID.randomUUID())
+                .firstname(clientDto.firstname)
+                .lastname(clientDto.lastname)
+                .surname(clientDto.surname)
+                .sex(clientDto.sex)
+                .birthday(clientDto.birthday)
+                .phoneNumber(clientDto.phoneNumber)
+                .isBlock(false)
+                .additionalNumber(clientDto.additionalNumber)
+                .email(clientDto.email)
+                .reasonOfBlock(null)
+                .build();
     }
 }
