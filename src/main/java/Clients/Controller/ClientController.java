@@ -91,5 +91,4 @@ public class ClientController {
     public @ResponseBody byte[] getPhoto(@PathVariable UUID id) {
         return this.clientService.getPhoto(id);
     }
-
 }

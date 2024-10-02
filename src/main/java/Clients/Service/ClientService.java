@@ -6,6 +6,7 @@ import Clients.Models.Client.ClientDto;
 import Clients.Repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -58,9 +59,12 @@ public class ClientService {
     @CachePut(value = "client", key = "#client.id")
     public void updateClient(ClientDto clientDto) {
         log.debug("#updateClient: clientDto={}", clientDto);
-        clientRepository.save(clientRepository.findById(clientDto.id).orElseThrow(
-                () -> new NotFoundException("Client", "id", clientDto.id.toString()))
+        Client client = clientRepository.findById(clientDto.id).orElseThrow(
+                () -> new NotFoundException("Client", "id", clientDto.id.toString())
         );
+
+        BeanUtils.copyProperties(clientDto, client);
+        clientRepository.save(client);
     }
 
     /**

@@ -1,12 +1,13 @@
 package Clients.Repository;
 
-import Clients.Entity.Client.Client;
 import Clients.Entity.Goal.Goal;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface GoalRepository extends JpaRepository<Goal, UUID> {
-    List<Goal> findAllByClient_Id(UUID clientId);
+@Repository
+public interface GoalRepository extends CrudRepository<Goal, UUID> {
+    List<Goal> findAllByClientId(UUID clientId);
 }

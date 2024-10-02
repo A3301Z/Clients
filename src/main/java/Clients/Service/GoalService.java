@@ -1,13 +1,12 @@
 package Clients.Service;
 
-import Clients.Entity.Client.Client;
 import Clients.Entity.Goal.Goal;
+import Clients.Exception.NotFoundException;
 import Clients.Models.Goal.GoalDTO;
-import Clients.Models.Goal.GoalMinimalDTO;
 import Clients.Repository.ClientRepository;
 import Clients.Repository.GoalRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,74 +14,74 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class GoalService {
+
     private final GoalRepository goalRepository;
     private final ClientRepository clientRepository;
 
-    public GoalService(@Autowired ClientRepository clientRepository, @Autowired GoalRepository goalRepository) {
-        this.goalRepository   = goalRepository;
-        this.clientRepository = clientRepository;
-    }
-
     @Transactional
     public void addGoal(Goal goal) {
+        log.debug("#addGoal: goal={}", goal);
         goalRepository.save(goal);
     }
 
     @Transactional
     public void updateGoal(Goal goal) {
+        log.debug("#updateGoal: goal={}", goal);
         goalRepository.save(goal);
     }
 
     public Goal findGoalById(UUID goalId) {
-        Optional<Goal> goalOptional = goalRepository.findById(goalId);
-
-        if (goalOptional.isEmpty()) {
-            throw new RuntimeException(String.format("Цель с id '%s' не найдена.", goalId));
-        } else {
-            return goalOptional.get();
-        }
+        log.debug("#findGoalById: goalId={}", goalId);
+        return goalRepository.findById(goalId).orElseThrow(
+                () -> new NotFoundException("Goal", "goalId", goalId.toString())
+        );
     }
 
     public List<GoalDTO> getGoals(UUID clientId) {
-        Optional<Client> client = clientRepository.findById(clientId);
+        clientRepository.findById(clientId).orElseThrow(
+                () -> new NotFoundException(String.format("Клиент с id '%s' не найден.", clientId)));
 
-        if (client.isEmpty()) {
-            throw new RuntimeException(String.format("Клиент с id '%s' не найден.", clientId));
-        } else {
+        List<Goal> goalList = goalRepository.findAllByClientId(clientId);
+        List<GoalDTO> goalDTOList = new ArrayList<>();
 
-            List<Goal> goalList = goalRepository.findAllByClient_Id(clientId);
-            List<GoalDTO> goalDTOList = new ArrayList<>();
-
-            for (Goal goal : goalList) {
-                GoalDTO goalDTO = new GoalDTO();
-                goalDTO.id       = goal.getId();
-                goalDTO.goalName = goal.getGoalName();
-                goalDTOList.add(goalDTO);
-            }
-            return goalDTOList;
+        for (Goal goal : goalList) {
+            GoalDTO goalDTO = new GoalDTO();
+            goalDTO.id = goal.getId();
+            goalDTO.goalName = goal.getGoalName();
+            goalDTOList.add(goalDTO);
         }
+        return goalDTOList;
     }
 
     @Transactional
     public void completeGoal(UUID goalId) {
-        Goal goal = findGoalById(goalId);
-        goal.setCompleted(true);
-        goal.setCompletionDate(LocalDate.now().atStartOfDay(ZoneOffset.UTC).toLocalDate());
-        goalRepository.save(goal);
+        log.debug("#completeGoal: goalId={}", goalId);
+        goalRepository.findById(goalId).ifPresentOrElse(actualGoal -> {
+                    actualGoal.setCompleted(true);
+                    actualGoal.setCompletionDate(LocalDate.now().atStartOfDay(ZoneOffset.UTC).toLocalDate());
+                    goalRepository.save(actualGoal);
+                }, () -> {
+                    throw new NotFoundException(String.format("Цель с id '%s' не найдена.", goalId));
+                }
+        );
     }
 
     @Transactional
     public void doNotComplete(UUID goalId) {
-        Goal goal = findGoalById(goalId);
-        goal.setCompleted(false);
-        goal.setCompletionDate(null);
-        goalRepository.save(goal);
+        log.debug("#doNotComplete: goalId={}", goalId);
+        goalRepository.findById(goalId).ifPresentOrElse(actualGoal -> {
+            actualGoal.setCompleted(false);
+            actualGoal.setCompletionDate(null);
+            goalRepository.save(actualGoal);
+        }, () -> {
+            throw new NotFoundException(String.format("Цель с id '%s' не найдена.", goalId));
+        });
     }
 
     public Goal getFullInfo(UUID goalId) {
@@ -90,7 +89,9 @@ public class GoalService {
     }
 
     public void deleteGoal(UUID goalId) {
-        Goal goal = findGoalById(goalId);
-        goalRepository.delete(goal);
+        log.debug("#deleteGoal: goalId={}", goalId);
+        goalRepository.findById(goalId).ifPresentOrElse(goalRepository::delete, () -> {
+            throw new NotFoundException(String.format("Цель с id '%s' не найдена.", goalId));
+        });
     }
 }
