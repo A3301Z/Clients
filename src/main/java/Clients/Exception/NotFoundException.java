@@ -6,10 +6,6 @@ public class NotFoundException extends RuntimeException{
         super(String.format("%s not found by %s = %s", object, key, value));
     }
 
-    public NotFoundException(final String message, Throwable throwable) {
-        super(message, throwable);
-    }
-
     public NotFoundException(final String message) {
         super(message);
     }

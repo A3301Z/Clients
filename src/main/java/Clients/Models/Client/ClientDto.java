@@ -1,28 +1,54 @@
 package Clients.Models.Client;
 
-import Clients.Models.Views.Private;
-import Clients.Models.Views.Public;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
-@JsonPropertyOrder({"id",
-                    "lastname",
-                    "firstname",
-                    "surname",
-                    "sex",
-                    "birthday",
-                    "phoneNumber",
-                    "email",
-                    "additionalNumber"})
-public class ClientDto extends ClientMinimalDTO {
-    @JsonView(Public.class)
-    @JsonProperty("email")
+import java.time.LocalDate;
+import java.util.UUID;
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Schema(description = "Dto клиента")
+public class ClientDto {
+
+    @Schema(description = "Уникальный идентификатор")
+    public UUID id;
+
+    @Schema(description = "имя")
+    public String firstname;
+
+    @Schema(description = "Фамилия")
+    public String lastname;
+
+    @Schema(description = "Отчество")
+    public String surname;
+
+    @Schema(description = "Дата рождения")
+    public LocalDate birthday;
+
+    @Schema(description = "Пол")
+    public String sex;
+
+    @Schema(description = "Номер телефона")
+    public String phoneNumber;
+
+    @Schema(description = "Статус блокировки")
+    public boolean isBlock;
+
+    @Schema(description = "Почта")
     public String email;
-    @JsonView(Public.class)
-    @JsonProperty("additionalNumber")
+
+    @Schema(description = "Дополнительный номер телефона")
     public String additionalNumber;
-    @JsonView(Private.class)
-    @JsonProperty("reasonOfBlock")
+
+    @Schema(description = "Причина блокировки")
     public String reasonOfBlock;
 }
+
+
+
+
+

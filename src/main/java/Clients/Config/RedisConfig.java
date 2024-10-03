@@ -14,9 +14,7 @@ import java.time.Duration;
 public class RedisConfig {
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        RedisCacheConfiguration config =
-                RedisCacheConfiguration
-                        .defaultCacheConfig()
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                         .entryTtl(Duration.ofMinutes(15))
                         .serializeValuesWith(RedisSerializationContext
                                 .SerializationPair

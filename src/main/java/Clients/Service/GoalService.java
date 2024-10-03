@@ -1,8 +1,9 @@
 package Clients.Service;
 
-import Clients.Entity.Goal.Goal;
+import Clients.Entity.Goal;
 import Clients.Exception.NotFoundException;
-import Clients.Models.Goal.GoalDTO;
+import Clients.Models.Goal.GoalMinimalDto;
+import Clients.Models.Goal.GoalDto;
 import Clients.Repository.ClientRepository;
 import Clients.Repository.GoalRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static Clients.Models.Goal.GoalDto.goalDtoToGoal;
 
 @Slf4j
 @Service
@@ -25,38 +28,48 @@ public class GoalService {
     private final ClientRepository clientRepository;
 
     @Transactional
-    public void addGoal(Goal goal) {
-        log.debug("#addGoal: goal={}", goal);
-        goalRepository.save(goal);
+    public void addGoal(UUID clientID, GoalDto goalMinimalDTO) {
+        log.debug("#addGoal: clientId = {} goalMinimalDto = {}", clientID, goalMinimalDTO);
+
+        clientRepository.findById(clientID).ifPresent(client -> {
+            goalRepository.save(
+                    Goal.builder()
+                            .name(goalMinimalDTO.name)
+                            .description(goalMinimalDTO.description)
+                            .build()
+            );
+        });
     }
 
     @Transactional
-    public void updateGoal(Goal goal) {
-        log.debug("#updateGoal: goal={}", goal);
-        goalRepository.save(goal);
+    public void updateGoal(GoalDto goalMinimalDTO) {
+        log.debug("#updateGoal: goalMinimalDTO={}", goalMinimalDTO);
+        goalRepository.findById(goalMinimalDTO.id).ifPresentOrElse(goal -> {
+            goalDtoToGoal(goalMinimalDTO, goal);
+            goalRepository.save(goal);
+        }, () -> {
+            throw new NotFoundException(String.format("Не найдена цель клиента: id = %s", goalMinimalDTO.id));
+        });
     }
 
     public Goal findGoalById(UUID goalId) {
         log.debug("#findGoalById: goalId={}", goalId);
         return goalRepository.findById(goalId).orElseThrow(
-                () -> new NotFoundException("Goal", "goalId", goalId.toString())
-        );
+                () -> new NotFoundException("Goal", "goalId", goalId.toString()));
     }
 
-    public List<GoalDTO> getGoals(UUID clientId) {
+    public List<GoalMinimalDto> getGoals(UUID clientId) {
+        log.debug("#getGoals: clientId={}", clientId);
         clientRepository.findById(clientId).orElseThrow(
-                () -> new NotFoundException(String.format("Клиент с id '%s' не найден.", clientId)));
+                () -> new NotFoundException(String.format("Клиент с id '%s' не найден.", clientId))
+        );
 
-        List<Goal> goalList = goalRepository.findAllByClientId(clientId);
-        List<GoalDTO> goalDTOList = new ArrayList<>();
-
-        for (Goal goal : goalList) {
-            GoalDTO goalDTO = new GoalDTO();
-            goalDTO.id = goal.getId();
-            goalDTO.goalName = goal.getGoalName();
-            goalDTOList.add(goalDTO);
-        }
-        return goalDTOList;
+        return goalRepository.findAllByClientId(clientId).stream()
+                .map(goal -> GoalMinimalDto.builder()
+                        .id(goal.getId())
+                        .name(goal.getName())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Transactional

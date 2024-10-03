@@ -1,48 +1,36 @@
 package Clients.Models.Client;
 
-import Clients.Models.Views.Private;
-import Clients.Models.Views.Public;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-@JsonPropertyOrder({"id",
-                    "lastname",
-                    "firstname",
-                    "surname",
-                    "sex",
-                    "birthday",
-                    "phoneNumber",
-                    "email",
-                    "additionalNumber"})
+@Builder()
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class ClientMinimalDTO {
-    @JsonView(Public.class)
-    @JsonProperty("id")
-    public UUID id;
-    @JsonProperty("firstname")
-    @JsonView(Public.class)
+
+    @Schema(description = "Имя")
     public String firstname;
-    @JsonProperty("lastname")
-    @JsonView(Public.class)
+
+    @Schema(description = "Фамилия")
     public String lastname;
-    @JsonProperty("surname")
-    @JsonView(Public.class)
+
+    @Schema(description = "Отчество")
     public String surname;
-    @JsonFormat(pattern = "dd.MM.yyyy")
-    @JsonView(Public.class)
-    @JsonProperty("birthday")
+
+    @Schema(description = "Дата рождения")
     public LocalDate birthday;
-    @JsonProperty("sex")
-    @JsonView(Public.class)
+
+    @Schema(description = "Пол")
     public String sex;
-    @JsonProperty("phoneNumber")
-    @JsonView(Public.class)
+
+    @Schema(description = "Номер телефона")
     public String phoneNumber;
-    @JsonProperty("is_block")
-    @JsonView(Private.class)
+
+    @Schema(description = "Статус блокировки")
     public boolean is_block;
 }
