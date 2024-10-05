@@ -3,6 +3,7 @@ package Clients.rest.Controller;
 import Clients.Entity.Client;
 import Clients.Models.Client.ClientDto;
 import Clients.Models.Client.ClientMinimalDTO;
+import Clients.Models.Client.CreateClientDto;
 import Clients.Service.ClientService;
 import Clients.rest.api.ClientApi;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,8 @@ public class ClientController implements ClientApi {
     private final ClientService clientService;
 
     @Override
-    public void add(ClientMinimalDTO clientMinimalDTO) {
-        clientService.add(clientMinimalDTO);
+    public void add(CreateClientDto createClientDto) {
+        clientService.add(createClientDto);
     }
 
     @Override

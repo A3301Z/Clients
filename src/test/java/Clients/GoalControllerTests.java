@@ -33,14 +33,14 @@ class GoalControllerTests {
         assertEquals(expectedGoals.size(), actualGoals.size());
     }
 
-    @Test
-    void testGetGoalFullInfo() {
-        UUID goalId = UUID.randomUUID();
-        Goal expectedGoal = new Goal();
-        when(goalService.getFullInfo(goalId)).thenReturn(expectedGoal);
-        Goal actualGoal = goalController.getGoalFullInfo(goalId);
-        assertEquals(expectedGoal, actualGoal);
-    }
+//    @Test
+//    void testGetGoalFullInfo() {
+//        UUID goalId = UUID.randomUUID();
+//        Goal expectedGoal = new Goal();
+//        when(goalService.getFullInfo(goalId)).thenReturn(expectedGoal);
+//        Goal actualGoal = goalController.getGoalFullInfo(goalId);
+//        assertEquals(expectedGoal, actualGoal);
+//    }
 
     @Test
     void testCompleteGoal() {

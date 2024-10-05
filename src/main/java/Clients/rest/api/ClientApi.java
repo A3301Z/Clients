@@ -3,6 +3,7 @@ package Clients.rest.api;
 import Clients.Entity.Client;
 import Clients.Models.Client.ClientDto;
 import Clients.Models.Client.ClientMinimalDTO;
+import Clients.Models.Client.CreateClientDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -19,7 +20,7 @@ import java.util.UUID;
 public interface ClientApi {
     @Operation(summary = "Добавить в список")
     @PostMapping(value = "/client")
-    void add(@RequestBody ClientMinimalDTO clientDTO);
+    void add(@RequestBody CreateClientDto createClientDto);
 
     @Operation(summary = "Получить список")
     @GetMapping("/clients")

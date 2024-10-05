@@ -1,9 +1,8 @@
 package Clients.rest.api;
 
-import Clients.Entity.Goal;
-import Clients.Models.Goal.GoalMinimalDto;
+import Clients.Models.Goal.CreateGoalDto;
 import Clients.Models.Goal.GoalDto;
-import com.fasterxml.jackson.annotation.JsonView;
+import Clients.Models.Goal.GoalMinimalDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +15,13 @@ import java.util.UUID;
 public interface GoalApi {
     @Operation(summary = "Добавить в список")
     @PostMapping("/clients/{clientId}")
-    void addGoal(
-            @PathVariable UUID clientId, @RequestBody @JsonView GoalDto goalMinimalDTO);
+    void addGoal(@PathVariable UUID clientId,
+                 @RequestBody CreateGoalDto createGoalDto);
 
     @Operation(summary = "Обновить")
-    @PutMapping("/clients/goal")
-    void updateGoal(@RequestBody GoalDto goalMinimalDTO);
+    @PutMapping("/clients/goal/{clientId}")
+    void updateGoal(@PathVariable UUID clientId,
+                    @RequestBody GoalDto goalMinimalDTO);
 
     @Operation(summary = "Получить весь список")
     @GetMapping("/clients/{clientId}/goals")
@@ -29,7 +29,7 @@ public interface GoalApi {
 
     @Operation(summary = "Полная информация о цели")
     @GetMapping("/clients/goal/{goalId}/fullInfo")
-    Goal getGoalFullInfo(@PathVariable UUID goalId);
+    GoalDto getGoalFullInfo(@PathVariable UUID goalId);
 
     @Operation(summary = "Завершить")
     @PutMapping("/clients/goal/{goalId}/complete")

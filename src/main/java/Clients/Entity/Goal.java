@@ -1,5 +1,6 @@
 package Clients.Entity;
 
+import Clients.Models.Goal.GoalDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,13 +24,12 @@ public class Goal implements Serializable {
      * Идентификатор
      */
     @Id
-    @Column("id")
     private UUID id;
 
     /**
      * Имя цели (Напирмер "похудеть до конца года")
      */
-    @Column("goal_name")
+    @Column("name")
     private String name;
 
     /**
@@ -70,4 +70,16 @@ public class Goal implements Serializable {
                 .isCompleted(this.isCompleted)
                 .completionDate(this.completionDate);
     }
+
+    public static Goal toGoal(GoalDto goalDto, Goal goal, UUID clientId) {
+        return goal.toBuilder()
+                .name(goalDto.name)
+                .description(goalDto.description)
+                .desiredCompletionDate(goalDto.desiredCompletionDate)
+                .isCompleted(goalDto.isCompleted)
+                .completionDate(goalDto.completionDate)
+                .clientId(clientId)
+                .build();
+    }
+
 }
