@@ -1,48 +1,41 @@
 package Clients.Models.Client;
 
-import Clients.Models.Views.Private;
-import Clients.Models.Views.Public;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-@JsonPropertyOrder({"id",
-                    "lastname",
-                    "firstname",
-                    "surname",
-                    "sex",
-                    "birthday",
-                    "phoneNumber",
-                    "email",
-                    "additionalNumber"})
+@Builder()
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class ClientMinimalDTO {
-    @JsonView(Public.class)
-    @JsonProperty("id")
+
+    @Schema(description = "Уникальный идентификатор", example = "Some UUID")
     public UUID id;
-    @JsonProperty("firstname")
-    @JsonView(Public.class)
+
+    @Schema(description = "имя", example = "Иван")
     public String firstname;
-    @JsonProperty("lastname")
-    @JsonView(Public.class)
+
+    @Schema(description = "Фамилия", example = "Иванов")
     public String lastname;
-    @JsonProperty("surname")
-    @JsonView(Public.class)
+
+    @Schema(description = "Отчество", example = "Иванович")
     public String surname;
-    @JsonFormat(pattern = "dd.MM.yyyy")
-    @JsonView(Public.class)
-    @JsonProperty("birthday")
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
+    @Schema(description = "Дата рождения", example = "01.12.1990")
     public LocalDate birthday;
-    @JsonProperty("sex")
-    @JsonView(Public.class)
+
+    @Schema(description = "Пол", example = "м/ж")
     public String sex;
-    @JsonProperty("phoneNumber")
-    @JsonView(Public.class)
+
+    @Schema(description = "Номер телефона", example = "88005553535")
     public String phoneNumber;
-    @JsonProperty("is_block")
-    @JsonView(Private.class)
-    public boolean is_block;
+
+    @Schema(description = "Статус блокировки", example = "true/false")
+    public boolean isBlock;
 }

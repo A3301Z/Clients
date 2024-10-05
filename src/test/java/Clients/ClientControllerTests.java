@@ -1,7 +1,7 @@
 package Clients;
 
-import Clients.Controller.ClientController;
-import Clients.Entity.Client.Client;
+import Clients.rest.Controller.ClientController;
+import Clients.Entity.Client;
 import Clients.Models.Client.ClientMinimalDTO;
 import Clients.Service.ClientService;
 import org.junit.jupiter.api.Test;
@@ -26,12 +26,8 @@ public class ClientControllerTests {
     private ClientController clientController;
 
     @Test
-    void testAdd() {
-
-    }
-    @Test
     void testGetClients() {
-        List<Client> clients = new ArrayList<>();
+        List<ClientMinimalDTO> clients = new ArrayList<>();
         when(clientService.getClients()).thenReturn(clients);
         List<ClientMinimalDTO> actualClients = clientController.getClients();
         assertEquals(clients.size(), actualClients.size());
@@ -44,11 +40,6 @@ public class ClientControllerTests {
         when(clientService.findById(id)).thenReturn(Optional.of(client));
         clientController.getFullInfo(id);
         verify(clientService, times(1)).findById(id);
-    }
-
-    @Test
-    void testUpdateClient() {
-
     }
 
     @Test
