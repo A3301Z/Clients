@@ -4,19 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
-@Builder
-@NoArgsConstructor
+@Builder()
 @AllArgsConstructor
-@Schema(description = "Dto клиента")
-public class ClientDto {
-
-    @Schema(description = "Уникальный идентификатор", example = "Some UUID")
-    public UUID id;
+@RequiredArgsConstructor
+public class CreateClientDto {
 
     @Schema(description = "имя", example = "Иван")
     public String firstname;
@@ -28,7 +23,7 @@ public class ClientDto {
     public String surname;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
-    @Schema(description = "Дата рождения", example = "01.12.1990")
+    @Schema(description = "Дата рождения", example = "01.12.1990", type = "string", format = "date")
     public LocalDate birthday;
 
     @Schema(description = "Пол", example = "м/ж")
@@ -37,20 +32,6 @@ public class ClientDto {
     @Schema(description = "Номер телефона", example = "88005553535")
     public String phoneNumber;
 
-    @Schema(description = "Статус блокировки", example = "true/false")
+    @Schema(description = "Статус блокировки", example = "false")
     public boolean isBlock;
-
-    @Schema(description = "Почта", example = "ivanov@mail.com")
-    public String email;
-
-    @Schema(description = "Дополнительный номер телефона", example = "88005553535")
-    public String additionalNumber;
-
-    @Schema(description = "Причина блокировки", example = "Подрался с тренером")
-    public String reasonOfBlock;
 }
-
-
-
-
-

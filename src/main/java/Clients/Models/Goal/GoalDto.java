@@ -1,6 +1,6 @@
 package Clients.Models.Goal;
 
-import Clients.Entity.Goal;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Schema(description = "Dto целей клиента")
-@Builder(builderMethodName = "goalMinBuilder")
+@Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class GoalDto {
@@ -18,30 +18,20 @@ public class GoalDto {
     @Schema(description = "Уникальный идентификатор")
     public UUID id;
 
-    @Schema(description = "Наименование цели")
+    @Schema(description = "Наименование цели", example = "Накачаться")
     public String name;
 
-    @Schema(description = "Описание цели")
+    @Schema(description = "Описание цели", example = "Накачать 50-ти сантиметровые банки")
     public String description;
 
-    @Schema(description = "Желаемая дата завершения")
+    @Schema(description = "Желаемая дата завершения", example = "11.12.2025")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     public LocalDate desiredCompletionDate;
 
-    @Schema(description = "Флаг достижения цели")
+    @Schema(description = "Флаг достижения цели", example = "false")
     public boolean isCompleted;
 
-    @Schema(description = "Дата достижения цели")
+    @Schema(description = "Дата достижения цели", example = "11.12.2025")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     public LocalDate completionDate;
-
-
-
-    public static Goal goalDtoToGoal(GoalDto dto, Goal goal) {
-        return goal.toBuilder()
-                .name(dto.name)
-                .description(dto.description)
-                .desiredCompletionDate(dto.desiredCompletionDate)
-                .isCompleted(dto.isCompleted)
-                .completionDate(dto.completionDate)
-                .build();
-    }
 }

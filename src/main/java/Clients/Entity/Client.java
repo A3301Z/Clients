@@ -1,8 +1,7 @@
 package Clients.Entity;
 
-import Clients.Models.Client.ClientMinimalDTO;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import Clients.Models.Client.ClientDto;
+import Clients.Models.Client.CreateClientDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -94,16 +93,31 @@ public class Client implements Serializable {
     @Column("content")
     private byte[] content;
 
-    public static Client toClient(ClientMinimalDTO clientMinimalDTO) {
+    public static Client toClient(CreateClientDto createClientDto) {
         return Client.builder()
-                .id(UUID.randomUUID())
-                .firstname(clientMinimalDTO.firstname)
-                .lastname(clientMinimalDTO.lastname)
-                .surname(clientMinimalDTO.surname)
-                .sex(clientMinimalDTO.sex)
-                .birthday(clientMinimalDTO.birthday)
-                .phoneNumber(clientMinimalDTO.phoneNumber)
+                .firstname(createClientDto.firstname)
+                .lastname(createClientDto.lastname)
+                .surname(createClientDto.surname)
+                .sex(createClientDto.sex)
+                .birthday(createClientDto.birthday)
+                .phoneNumber(createClientDto.phoneNumber)
                 .isBlock(false)
+                .build();
+    }
+
+    public static Client toClient(ClientDto clientDto) {
+        return Client.builder()
+                .id(clientDto.id)
+                .firstname(clientDto.firstname)
+                .lastname(clientDto.lastname)
+                .surname(clientDto.surname)
+                .birthday(clientDto.birthday)
+                .sex(clientDto.sex)
+                .phoneNumber(clientDto.phoneNumber)
+                .additionalNumber(clientDto.additionalNumber)
+                .email(clientDto.email)
+                .isBlock(clientDto.isBlock)
+                .reasonOfBlock(clientDto.reasonOfBlock)
                 .build();
     }
 }

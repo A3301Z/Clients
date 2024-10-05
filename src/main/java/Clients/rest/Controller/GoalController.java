@@ -1,8 +1,8 @@
 package Clients.rest.Controller;
 
-import Clients.Entity.Goal;
-import Clients.Models.Goal.GoalMinimalDto;
+import Clients.Models.Goal.CreateGoalDto;
 import Clients.Models.Goal.GoalDto;
+import Clients.Models.Goal.GoalMinimalDto;
 import Clients.Service.GoalService;
 import Clients.rest.api.GoalApi;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +18,13 @@ public class GoalController implements GoalApi {
     private final GoalService goalService;
 
     @Override
-    public void addGoal(UUID clientId, GoalDto goalMinimalDTO) {
-        goalService.addGoal(clientId, goalMinimalDTO);
+    public void addGoal(UUID clientId, CreateGoalDto createGoalDto) {
+        goalService.addGoal(clientId, createGoalDto);
     }
 
     @Override
-    public void updateGoal(GoalDto goalMinimalDTO) {
-        goalService.updateGoal(goalMinimalDTO);
+    public void updateGoal(UUID clientId, GoalDto goalDto) {
+        goalService.updateGoal(clientId, goalDto);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class GoalController implements GoalApi {
     }
 
     @Override
-    public Goal getGoalFullInfo(UUID goalId) {
+    public GoalDto getGoalFullInfo(UUID goalId) {
         return goalService.getFullInfo(goalId);
     }
 

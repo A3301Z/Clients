@@ -4,10 +4,10 @@ import Clients.Entity.Client;
 import Clients.Exception.NotFoundException;
 import Clients.Models.Client.ClientDto;
 import Clients.Models.Client.ClientMinimalDTO;
+import Clients.Models.Client.CreateClientDto;
 import Clients.Repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +27,9 @@ public class ClientService {
      * Добавить клиента в БД
      */
     @Transactional
-    public void add(ClientMinimalDTO clientMinimalDTO) {
-        log.debug("#add: clientDto={}", clientMinimalDTO);
-        clientRepository.save(Client.toClient(clientMinimalDTO));
+    public void add(CreateClientDto createClientDto) {
+        log.debug("#add: clientDto={}", createClientDto);
+        clientRepository.save(Client.toClient(createClientDto));
     }
 
     /**
@@ -38,13 +38,14 @@ public class ClientService {
     public List<ClientMinimalDTO> getClients() {
         log.debug("#getClients");
         return clientRepository.findAllClients().stream().map(client -> ClientMinimalDTO.builder()
+                        .id(client.getId())
                         .firstname(client.getFirstname())
                         .lastname(client.getLastname())
                         .surname(client.getSurname())
                         .birthday(client.getBirthday())
                         .sex(client.getSex())
                         .phoneNumber(client.getPhoneNumber())
-                        .is_block(client.isBlock())
+                        .isBlock(client.isBlock())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -63,11 +64,10 @@ public class ClientService {
     @Transactional
     public void updateClient(ClientDto clientDto) {
         log.debug("#updateClient: clientDto={}", clientDto);
-        Client client = clientRepository.findById(clientDto.id).orElseThrow(
+        clientRepository.findById(clientDto.id).orElseThrow(
                 () -> new NotFoundException("Client", "id", clientDto.id.toString())
         );
-        BeanUtils.copyProperties(clientDto, client);
-        clientRepository.save(client);
+        clientRepository.save(Client.toClient(clientDto));
     }
 
     /**
@@ -88,6 +88,7 @@ public class ClientService {
      * Удалить клиента из БД
      */
     public void deleteClient(UUID id) {
+        log.debug("#deleteClient: id={}", id);
         clientRepository.findById(id).ifPresentOrElse(clientRepository::delete, () -> {
             throw new NotFoundException("Client", "id", id.toString());
         });
@@ -97,7 +98,7 @@ public class ClientService {
      * Добавить фото клиента
      */
     public void addPhoto(UUID id, byte[] content) {
-        log.debug("#getPhoto: id = {}", id);
+        log.debug("#addPhoto: id = {}", id);
         clientRepository.findById(id).ifPresentOrElse(client -> {
             client.setContent(content);
             clientRepository.save(client);
