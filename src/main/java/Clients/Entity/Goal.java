@@ -61,25 +61,4 @@ public class Goal implements Serializable {
      */
     @Column("client_id")
     private UUID clientId;
-
-    public GoalBuilder toBuilder() {
-        return Goal.builder().
-                name(this.name)
-                .description(this.description)
-                .desiredCompletionDate(this.desiredCompletionDate)
-                .isCompleted(this.isCompleted)
-                .completionDate(this.completionDate);
-    }
-
-    public static Goal toGoal(GoalDto goalDto, Goal goal, UUID clientId) {
-        return goal.toBuilder()
-                .name(goalDto.name)
-                .description(goalDto.description)
-                .desiredCompletionDate(goalDto.desiredCompletionDate)
-                .isCompleted(goalDto.isCompleted)
-                .completionDate(goalDto.completionDate)
-                .clientId(clientId)
-                .build();
-    }
-
 }
